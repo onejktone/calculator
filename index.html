@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #333;
+            margin: 0;
+        }
+
+        .calculator {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%; /* Lebar kalkulator lebih responsif */
+            max-width: 400px; /* Lebar maksimal untuk tampilan besar */
+        }
+
+        .display {
+            width: calc(100% - 20px);
+            height: 50px;
+            background-color: #222;
+            color: #00FF7F;
+            border: none;
+            font-size: 32px; /* Ukuran font lebih besar untuk tampilan mobile */
+            font-family: 'Orbitron', sans-serif;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            text-align: right;
+            box-shadow: inset 0px 2px 8px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .animated-text {
+            white-space: nowrap;
+            position: absolute;
+            right: 0;
+            display: none;
+        }
+
+        @keyframes scroll {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px; /* Jarak antar tombol lebih kecil */
+        }
+
+        .buttons button {
+            background-color: #444;
+            color: white;
+            font-size: 28px; /* Ukuran font tombol lebih besar */
+            border: none;
+            border-radius: 10px;
+            padding: 20px; /* Padding tombol */
+            transition: all 0.3s;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .buttons button:hover {
+            background-color: #666;
+            transform: translateY(-3px);
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .buttons button:active {
+            transform: translateY(0px);
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .buttons button.operator {
+            background-color: #ff9500;
+        }
+
+        .buttons button.operator:hover {
+            background-color: #ffa733;
+        }
+
+        .buttons button.equals {
+            background-color: #28a745;
+        }
+
+        .buttons button.equals:hover {
+            background-color: #45c163;
+        }
+
+        .buttons button.double-width {
+            grid-column: span 2; /* Tombol 0 lebih besar */
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div id="display" class="display">
+            <div id="currentInput" class="current-input">0</div>
+            <div id="animatedText" class="animated-text">Semangat Melon, Have a Good Day! & Jangan lupa baca doa sebelum melakukan sesuatu &#128522; -Ari Fikriyadi</div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="backspace()">DEL</button>
+            <button class="operator" onclick="appendCharacter('/')">/</button>
+            <button class="operator" onclick="appendCharacter('*')">*</button>
+
+            <button onclick="appendCharacter('7')">7</button>
+            <button onclick="appendCharacter('8')">8</button>
+            <button onclick="appendCharacter('9')">9</button>
+            <button class="operator" onclick="appendCharacter('-')">-</button>
+
+            <button onclick="appendCharacter('4')">4</button>
+            <button onclick="appendCharacter('5')">5</button>
+            <button onclick="appendCharacter('6')">6</button>
+            <button class="operator" onclick="appendCharacter('+')">+</button>
+
+            <button onclick="appendCharacter('1')">1</button>
+            <button onclick="appendCharacter('2')">2</button>
+            <button onclick="appendCharacter('3')">3</button>
+            <button class="equals" onclick="calculate()">=</button>
+
+            <button onclick="appendCharacter('0')" class="double-width">0</button>
+            <button onclick="appendCharacter('.')">.</button>
+        </div>
+    </div>
+
+    <script>
+        let currentInput = '0'; // Awalnya menampilkan 0
+        let isCalculating = false; // Flag untuk mengetahui apakah sedang menghitung
+
+        function appendCharacter(character) {
+            if (currentInput === '0' || isCalculating) {
+                currentInput = character;
+                isCalculating = false;
+            } else {
+                currentInput += character;
+            }
+            updateDisplay(currentInput);
+        }
+
+        function clearDisplay() {
+            currentInput = '0';
+            isCalculating = false;
+            updateDisplay(currentInput);
+        }
+
+        function backspace() {
+            if (isCalculating) {
+                clearDisplay();
+            } else {
+                currentInput = currentInput.slice(0, -1);
+                updateDisplay(currentInput || '0');
+                if (currentInput === '') {
+                    currentInput = '0';
+                }
+            }
+        }
+
+        function updateDisplay(value) {
+            const currentInputDiv = document.getElementById('currentInput');
+            currentInputDiv.innerText = value;
+            document.getElementById('animatedText').style.display = 'none';
+        }
+
+        function calculate() {
+            try {
+                currentInput = eval(currentInput).toString(); // Hitung nilai input menggunakan eval
+                isCalculating = true;
+
+                const animatedText = document.getElementById('animatedText');
+                animatedText.style.display = 'block';
+                animatedText.style.animation = 'none';
+                animatedText.offsetHeight;
+                animatedText.style.animation = 'scroll 16s linear infinite';
+
+                document.getElementById('currentInput').innerText = ''; // Reset display untuk menyembunyikan angka
+            } catch (error) {
+                currentInput = 'Error';
+                updateDisplay(currentInput);
+                isCalculating = false;
+            }
+        }
+    </script>
+</body>
+</html>
